@@ -1,161 +1,122 @@
+# Account-a-Bill
+
 <div align="center">
 
-# 🔺 Account a Bill 🔺
+![Account-a-Bill](https://img.shields.io/badge/Account--a--Bill-Goal%20%26%20Tax%20Tracker-e11d2e?style=for-the-badge&logo=money&logoColor=white)
+![Version](https://img.shields.io/badge/version-1.1-0a0908?style=for-the-badge)
+![Platform](https://img.shields.io/badge/platform-Web%20%2F%20iOS%20Safari-000000?style=for-the-badge&logo=safari&logoColor=white)
+![Storage](https://img.shields.io/badge/storage-Local%20Only-5ee0a8?style=for-the-badge)
 
-### Set a money goal. Track every dollar. Know exactly what is left to make each day.
-
-![Status](https://img.shields.io/badge/status-active-e11d2e?style=for-the-badge)
-![Platform](https://img.shields.io/badge/platform-any_modern_browser-ff5a5f?style=for-the-badge)
-![Storage](https://img.shields.io/badge/data-stays_on_your_device-5ee0a8?style=for-the-badge)
-![Tax Year](https://img.shields.io/badge/tax_estimates-2026-6ab7ff?style=for-the-badge)
-![Dependencies](https://img.shields.io/badge/dependencies-none-b794f6?style=for-the-badge)
-
-<b>Maintained by <a href="https://github.com/synchancybersecurity">Synchan Cybersecurity</a></b>
+**Dig into your money goals. Track income, expenses, taxes, mileage, time, and cash flow — all offline, in one file.**
 
 </div>
 
 ---
 
-## 🟥 What Is Account a Bill?
+## What it is
 
-Account a Bill is a single page web app that turns a money target into a simple daily number. You enter how much you want to make and the date you need it by. The app then tells you how much is still left to make <b>today</b>, and it keeps that number honest as you log income, expenses, and tax items.
+**Account-a-Bill** is a single-file, privacy-first web app for tracking income goals (or outgoing payment goals), daily progress, tax estimates (2026 federal + state), business mileage, time worked, and effective pay-per-hour.
 
-It runs entirely in your browser. There is nothing to install, no account to create, and no server collecting your numbers.
+Everything lives in your browser (localStorage + IndexedDB). No accounts, no servers, no tracking.
 
----
-
-## 🟧 Features at a Glance
-
-| | Feature | What It Does |
-|---|---|---|
-| 🎯 | <b>Goals</b> | Set a target amount with a start date and a due date. |
-| 📆 | <b>Left to make per day</b> | Spreads what is still unmade across the days that remain, today included. |
-| 📤 | <b>Outgoing goals</b> | Track money you owe or plan to pay, with a left to pay per day figure. |
-| 💵 | <b>Income log</b> | Record every amount you make, by date. |
-| 🧾 | <b>Expenses and miscellaneous costs</b> | Anything you spend raises the amount you need to make. |
-| 🧮 | <b>Tax only deductions</b> | Log deductions that affect your taxes without changing your daily goal. |
-| 🚗 | <b>Mileage</b> | Enter business miles at the 2026 IRS rate of 72.5 cents per mile. |
-| 🧩 | <b>Sections</b> | Split one goal into parts such as rent, gas, and savings, filled automatically or by hand. |
-| 📊 | <b>Daily results</b> | See each day as met or short, with the extra you made past your daily goal. |
-| 🗂️ | <b>Combined and Monthly tabs</b> | View totals across every goal, or month by month. |
-| 🏛️ | <b>Tax estimator</b> | Federal and state estimates with credits, filing status, and payment due dates. |
-| 💾 | <b>Backups</b> | Triple saved on your device, plus a downloadable backup file. |
-| 🖨️ | <b>Print friendly</b> | A clean light theme for printing. |
+### Brand palette
+| Token | Hex | Use |
+|-------|-----|-----|
+| Accent | `#e11d2e` | Primary actions, progress |
+| Accent 2 | `#ff5a5f` | Highlights |
+| Background | `#07070a` | Deep black |
+| Card | frosted glass | Panels |
+| Positive | `#5ee0a8` | Made / good |
+| Negative | `#ff6b6b` | Spent / short |
 
 ---
 
-## 🟨 How the Daily Number Works
+## Features
 
-The math is deliberately simple, so you can always check it by hand.
+### Core Goal Tracking
+- Incoming goals (“money to make”) or outgoing (“money to pay”)
+- Daily / remaining needed, pace tracking, progress bars
+- Sections / sub-budgets with automatic or manual allocation
+- Daily results vs goal, history with filters & search
 
-```text
-Money you need to make  =  Goal target  +  Money spent  +  Miscellaneous costs
-Still unmade            =  Money you need to make  -  Money made so far
-Left to make per day    =  Still unmade  /  Days left (today included)
-```
+### Tax Tools (2026 figures)
+- Worker types: W-2, 1099-NEC, 1099-K, 1099-MISC, self-employed
+- Federal brackets + standard deduction + QBI + credits (CTC, care, EITC)
+- State brackets, standard deductions, personal exemptions (real 2026 data)
+- Tax-only deductions, estimated payments log, mileage at **72.5¢/mi**
+- Combined multi-goal tax estimate
+- Paystub generator + CSV exports
 
-- Spend more, and the amount you need to make goes up.
-- Make more than your daily goal on a good day, and the number for the remaining days goes down.
-- The progress bar and the pace line show whether you are ahead of or behind where you should be.
+### New in this update
+| Feature | Description |
+|---------|-------------|
+| **GPS Auto-Mileage** | Start a trip → device GPS tracks distance → end & auto-log as tax-only deduction |
+| **Cash Flow Estimator** | Projects remaining need, current-pace surplus/shortfall, and what-if daily rate calculator |
+| **Time Tracker + $/hr** | Live timer (start / pause / resume / stop) or manual hours → effective pay-per-hour = money made ÷ hours logged |
 
----
-
-## 🟩 Sections
-
-Big goals are easier when they are broken into parts. Each section has its own dollar amount, and the goal total is the sum of all sections.
-
-- <b>Automatic mode.</b> Money you make covers expenses first, then fills each section in order.
-- <b>Manual mode.</b> You decide how much goes to each section, and the app shows what is still unallocated.
-- Reorder, edit, or delete sections at any time.
-- Paste several at once, one per line, with a name followed by an amount.
-
----
-
-## 🟦 Tax Estimator
-
-Pick a worker type and a state, and Account a Bill estimates what you may owe.
-
-<b>Worker types:</b> W-2 employee, 1099 NEC, 1099 K, 1099 MISC, and self employed.
-
-<b>What it includes:</b>
-
-- 2026 federal income tax brackets and standard deductions for single, married filing jointly, married filing separately, and head of household
-- Self employment tax, with the Social Security wage base cap
-- The qualified business income deduction
-- Child tax credit, other dependent credit, child and dependent care credit, and earned income credit
-- State income tax using each state's brackets, standard deduction, and personal exemption
-- A log of estimated tax payments, with the next due date and a suggested amount
-- A set aside percentage, so you know how much of each dollar to save for taxes
-
-> ⚠️ <b>Important:</b> These figures are rough estimates and are not tax advice. Local taxes, dependents in some states, and several federal extras are not included. Please confirm with a qualified tax professional or the official forms before you file or pay.
+### Other
+- Monthly income view + quick-add + manual income
+- Full backup / restore (JSON file or text)
+- Print-friendly paystubs
+- Mobile-first (works great on iOS Safari)
 
 ---
 
-## 🟪 Your Data and Your Privacy
+## Quick Start
 
-- Everything is stored in your own browser on your own device.
-- Nothing is sent to a server, and the app needs no account.
-- Every save writes <b>three copies</b>: the main copy, a second local copy, and an IndexedDB copy. If the main copy ever goes missing, the app offers to restore a saved one.
-- You can copy your data as text or <b>download a backup file</b> at any time, and restore from either.
+1. Open `account-a-bill.html` (or `index.html`) in any modern browser.
+2. Tap **+ New goal**.
+3. Set name, amount, start & end dates.
+4. Log money made / spent / misc / tax-only as you go.
+5. Use the **Tax** tab for worker type + state + GPS mileage + payments.
+6. Use **Overview** or **Made** for the time tracker and cash-flow tools.
 
-> 💡 <b>Tip:</b> Clearing your browser's website data erases the app's data. Download a backup file once a week, and the app will remind you when it has been a while.
-
----
-
-## 🚀 Getting Started
-
-<b>Option 1: Open the file</b>
-
-1. Download `index.html` from this repository.
-2. Open it in any modern browser.
-3. Tap <b>New goal</b>, enter a name, a target amount, and a due date.
-4. Log what you make and what you spend each day.
-
-<b>Option 2: Host it with GitHub Pages</b>
-
-1. Open the repository <b>Settings</b> and choose <b>Pages</b>.
-2. Under <b>Build and deployment</b>, pick <b>Deploy from a branch</b>.
-3. Select your main branch and the root folder, then save.
-4. Your app will be live at `https://synchancybersecurity.github.io/account-a-bill/`.
+> **Tip:** Download a backup regularly. Clearing Safari website data will erase local storage.
 
 ---
 
-## 📁 Project Structure
-
-```text
-account-a-bill/
-├── index.html    The complete app: markup, styles, and logic in one file
-└── README.md     This guide
-```
+## File StructureNo build step. No dependencies. Just open the HTML.
 
 ---
 
-## 🛠️ Built With
+## Privacy & Data
 
-![HTML5](https://img.shields.io/badge/HTML5-e34f26?style=flat-square&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572b6?style=flat-square&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-f7df1e?style=flat-square&logo=javascript&logoColor=black)
-
-Plain HTML, CSS, and JavaScript. No frameworks, no build step, and no external services.
-
----
-
-## 🎨 Design
-
-A frosted glass look over a black faceted backdrop with red light, angled card corners, and a mobile first layout that respects safe areas on phones.
+- All data stays on-device.
+- Triple-write on save: primary key, `.bak` key, IndexedDB.
+- Empty states never overwrite existing backups.
+- Export full CSV of entries + tax summary anytime.
 
 ---
 
-## 🤝 Contributing
+## Browser Notes
 
-Ideas and fixes are welcome. Open an issue to describe what you would like to change, or send a pull request with a short explanation of what it improves.
+| Browser | Notes |
+|---------|-------|
+| Safari (iOS / macOS) | Primary target. Grant location for GPS. Keep tab open while tracking. |
+| Chrome / Edge / Firefox | Full support. |
+| Background tracking | Limited by browser (GPS & timer pause or throttle when tab is backgrounded). |
+
+---
+
+## Roadmap / Ideas
+
+- Optional encrypted export
+- Multi-device sync via file or QR
+- More detailed expense categories
+- Dark / light theme toggle (currently dark-only)
+
+---
+
+## License
+
+Personal / private use. Do what you want with it.  
+Not tax, legal, or financial advice. Estimates only.
 
 ---
 
 <div align="center">
 
-<b>Made with care by Synchan Cybersecurity</b>
-
-<i>Know your number. Hit your goal.</i>
+**Account-a-Bill** · Track what you make. Know what you owe.  
+Made for people who dig deep.
 
 </div>
