@@ -1,0 +1,708 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Account-a-Bill</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one narrow column of frosted-glass panels over a black faceted (low-poly) backdrop with red light */
+:root{--bg:#07070a;--card:rgba(255,255,255,.055);--card-hi:rgba(255,255,255,.09);--line:rgba(255,255,255,.14);--fg:#f4eeee;--mute:#a69a9c;--acc:#e11d2e;--acc2:#ff5a5f;--acc-fg:#ffffff;--ok:#5ee0a8;--bad:#ff6b6b;--track:rgba(255,255,255,.1);--field:rgba(0,0,0,.45);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
+body{background-color:var(--bg);
+ background-image:
+  linear-gradient(135deg,rgba(225,29,46,.34) 0%,rgba(225,29,46,0) 38%),
+  linear-gradient(225deg,rgba(255,90,95,.2) 0%,rgba(255,90,95,0) 30%),
+  linear-gradient(60deg,transparent 0 46%,rgba(255,255,255,.03) 46% 54%,transparent 54%),
+  linear-gradient(120deg,transparent 0 62%,rgba(225,29,46,.10) 62% 70%,transparent 70%),
+  linear-gradient(200deg,transparent 0 40%,rgba(255,255,255,.035) 40% 47%,transparent 47%);
+ background-attachment:fixed;
+ color:var(--fg);font:16px/1.45 -apple-system,system-ui,"Segoe UI",sans-serif;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:12px 40px;font-variant-numeric:tabular-nums}
+main{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+main>*{min-width:0;max-width:100%}
+.brand{display:flex;align-items:center;gap:10px;margin:6px 0 0;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+.brand i{width:22px;height:22px;background:linear-gradient(135deg,var(--acc2),var(--acc) 55%,#7a0a14);clip-path:polygon(50% 0,100% 38%,82% 100%,18% 100%,0 38%);display:block}
+.brand b{color:var(--fg);letter-spacing:.22em}
+h1{font-size:26px;margin:4px 0 0;display:flex;justify-content:space-between;align-items:center;gap:8px;text-wrap:balance;letter-spacing:-.01em}
+h2{font-size:17px;margin:0}
+.card{position:relative;background:linear-gradient(145deg,var(--card-hi),var(--card));border:1px solid var(--line);border-top-color:rgba(255,255,255,.28);border-radius:4px 18px 4px 18px;padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0;-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);box-shadow:0 8px 28px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.1)}
+.card::after{content:"";position:absolute;top:0;right:0;width:44px;height:44px;background:linear-gradient(225deg,rgba(225,29,46,.55),transparent 60%);border-radius:0 18px 0 0;pointer-events:none;clip-path:polygon(0 0,100% 0,100% 100%)}
+.card.tap{cursor:pointer}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.mute{color:var(--mute);font-size:14px}
+.big{font-size:40px;font-weight:700;line-height:1.1;letter-spacing:-.02em}
+.bar{height:8px;background:var(--track);border-radius:2px;overflow:hidden;transform:skewX(-20deg)}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,#7a0a14,var(--acc),var(--acc2))}
+button{font:inherit;border:1px solid rgba(255,255,255,.22);border-radius:3px 12px 3px 12px;padding:10px 14px;background:linear-gradient(135deg,var(--acc2),var(--acc) 60%,#9d1020);color:var(--acc-fg);font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(225,29,46,.35)}
+button:active{transform:translateY(1px)}
+button.ghost{background:rgba(255,255,255,.04);color:var(--fg);border-color:var(--line);box-shadow:none}
+button.danger{background:transparent;color:var(--bad);border-color:var(--line);box-shadow:none}
+button.sm{padding:6px 10px;font-size:14px}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
+input,textarea{font:inherit;width:100%;min-width:0;max-width:100%;-webkit-appearance:none;appearance:none;padding:10px;border-radius:3px 10px 3px 10px;border:1px solid var(--line);background:var(--field);color:var(--fg)}
+input::placeholder{color:#7d7274}
+textarea{min-height:120px;font-family:ui-monospace,monospace;font-size:16px}
+label{font-size:13px;color:var(--mute);display:flex;flex-direction:column;gap:4px;min-width:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr));gap:8px;min-width:0}
+.grid>*{min-width:0}
+input[type=date]{min-height:44px;text-align:left}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.item{padding-top:10px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.item>div{min-width:0;overflow-wrap:anywhere}
+.pos{color:var(--ok)}.neg{color:var(--bad)}.misc{color:#ffb347}
+a.back{color:var(--acc2);text-decoration:none;font-weight:600}
+#toast{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom,0px));padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));pointer-events:none;display:flex;justify-content:center}
+#toast span{background:var(--acc);color:#fff;padding:10px 14px;border-radius:3px 12px 3px 12px;font-size:14px;max-width:560px}
+label.chk{flex-direction:row;align-items:center;gap:10px;color:var(--fg);font-size:14px}
+input[type=checkbox]{width:22px;height:22px;padding:0;flex:none;-webkit-appearance:checkbox;appearance:auto;accent-color:var(--acc)}
+.tag{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;margin-left:8px;border:1px solid var(--ok);color:var(--ok);border-radius:2px 6px 2px 6px;font-weight:600;vertical-align:middle}
+.item .btns{flex:0 1 auto;flex-wrap:wrap;justify-content:flex-end}
+.item.edit{display:block}
+.item.edit>*+*{margin-top:8px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{flex:none}
+.day{display:flex;justify-content:space-between;gap:8px;align-items:baseline;margin-top:6px;padding-top:8px;border-top:1px solid var(--line);font-weight:600}
+.day:first-of-type{border-top:0;margin-top:0;padding-top:0}
+.item.k-m{border-left:3px solid var(--ok);padding-left:10px}
+.item.k-s{border-left:3px solid var(--bad);padding-left:10px}
+.item.k-t{border-left:3px solid #6ab7ff;padding-left:10px}
+.blue{color:#6ab7ff}
+.purple{color:#b794f6}
+.item.k-i{border-left:3px solid #2dd4bf;padding-left:10px}
+.item.k-p{border-left:3px solid #b794f6;padding-left:10px}
+select{font:inherit;width:100%;min-width:0;padding:10px;border-radius:3px 10px 3px 10px;border:1px solid var(--line);background:var(--field);color:var(--fg)}
+option{background:#16161b;color:#fff}
+.item.k-x{border-left:3px solid #ffb347;padding-left:10px}
+.chip{border-radius:3px 12px 3px 12px;border:1px solid var(--line);background:rgba(255,255,255,.04);padding:6px 10px;font-size:14px;font-weight:600;box-shadow:none;color:var(--fg)}
+.chip.on{background:linear-gradient(135deg,var(--acc2),var(--acc) 60%,#9d1020);color:#fff;border-color:rgba(255,255,255,.22)}
+.chip.pos,.chip.neg,.chip.misc{background:rgba(255,255,255,.04)}
+.chip.on.pos,.chip.on.neg,.chip.on.misc{color:#fff;background:linear-gradient(135deg,var(--acc2),var(--acc) 60%,#9d1020)}
+.sum{display:flex;justify-content:space-between;gap:8px;padding-top:8px;border-top:1px solid var(--line)}
+table.stubt{width:100%;border-collapse:collapse;font-size:14px}
+.stubt th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);text-align:left;padding:6px 4px;border-bottom:1px solid var(--line);font-weight:600}
+.stubt td{padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:break-word;word-break:normal}
+.stubt .r{text-align:right;white-space:nowrap}
+.stubt tr.tot td{font-weight:700}
+.parties{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:380px){.stubt{font-size:12.5px}.stubt td.r{font-size:12px;letter-spacing:-.01em}.stubt th,.stubt td{padding:5px 2px}.stubt td:first-child{hyphens:auto;-webkit-hyphens:auto}}
+@media (max-width:360px){.stubt{font-size:12.5px}.stubt th,.stubt td{padding:5px 2px}.stubt th{font-size:10px;letter-spacing:.04em}.big{font-size:34px}h1{font-size:23px}.parties{grid-template-columns:1fr}}
+.stubt{table-layout:auto;max-width:100%}
+.parties h3{margin:0 0 2px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);font-weight:600}
+.metag{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+@media print{
+ .stubt td,.stubt th{border-color:#bbb}
+ :root{color-scheme:light}
+ body{background:#fff!important;color:#000;padding:0}
+ .noprint{display:none!important}
+ .card{background:#fff;border:1px solid #888;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;color:#000;border-radius:4px}
+ .card::after{display:none}
+ .mute{color:#444}.pos,.neg,.misc{color:#000}.tag{color:#000;border-color:#000}
+ .item,.sum{border-color:#bbb}
+}
+</style>
+<main id="app"></main>
+<div id="toast" hidden><span id="toastText"></span></div>
+<script>
+(function(){
+'use strict';
+var KEY='goaltracker.v1';
+var state=load();
+var view={page:'list',id:null,form:null,backup:false,armed:null};
+
+function load(){
+  var s={goals:[]};
+  try{var raw=localStorage.getItem(KEY);if(raw&&!localStorage.getItem(KEY+'.pretax'))localStorage.setItem(KEY+'.pretax',raw)}catch(e){}
+  var keys=[KEY,KEY+'.bak',KEY+'.pretax'];
+  for(var i=0;i<keys.length;i++){
+    try{var x=JSON.parse(localStorage.getItem(keys[i]));if(x&&Array.isArray(x.goals)&&x.goals.length){s=x;break}}catch(e){}
+  }
+  s.goals.forEach(function(g){
+    if(!g.made){g.made=g.entries||[];g.spent=[];g.target=g.budget||0;delete g.entries;delete g.adjustments;delete g.budget}
+    if(!g.spent)g.spent=[];
+    if(!g.misc)g.misc=[];
+    if(!g.taxonly)g.taxonly=[];
+    if(!g.taxpay)g.taxpay=[];
+    if(!g.subs)g.subs=[];
+    if(!g.time)g.time=[];
+  });
+  if(!s.profile)s.profile={name:'',payer:''};
+  if(!s.profile.filing)s.profile.filing='single';
+  if(s.profile.credits==null)s.profile.credits=0;
+  if(!Array.isArray(s.manual))s.manual=[];
+  return s;
+}
+function idb(cb){try{var r=indexedDB.open('accountabill',1);r.onupgradeneeded=function(){r.result.createObjectStore('s')};r.onsuccess=function(){cb(r.result)}}catch(e){}}
+function idbPut(j){idb(function(db){try{db.transaction('s','readwrite').objectStore('s').put(j,'latest')}catch(e){}})}
+function idbGet(cb){idb(function(db){try{var q=db.transaction('s').objectStore('s').get('latest');q.onsuccess=function(){cb(q.result)}}catch(e){}})}
+/* Every save writes three copies: main, a second localStorage key, and IndexedDB. Empty states never overwrite the spare copies. */
+function save(){
+  var j=JSON.stringify(state);
+  try{localStorage.setItem(KEY,j)}catch(e){toast('Could not save on this device. Copy a backup now.')}
+  if(state.goals.length){try{localStorage.setItem(KEY+'.bak',j)}catch(e){}idbPut(j)}
+}
+var tt;
+function toast(m){var t=document.getElementById('toast');document.getElementById('toastText').textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(function(){t.hidden=true},3500)}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function fmtDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function today(){return fmtDate(new Date())}
+function parse(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2])}
+function daysBetween(a,b){return Math.round((parse(b)-parse(a))/864e5)}
+function money(n){var neg=n<0;n=Math.abs(n);return (neg?'-':'')+'$'+n.toLocaleString(undefined,{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2})}
+function sum(a){return a.reduce(function(t,x){return t+x.amount},0)}
+function esc(s){var d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML}
+function find(id){for(var i=0;i<state.goals.length;i++)if(state.goals[i].id===id)return state.goals[i];return null}function calc(g){
+  var t=today();
+  var madeTotal=sum(g.made), spentTotal=sum(g.spent), miscTotal=sum(g.misc);
+  var taxOnlyTotal=sum(g.taxonly);
+  var taxTotal=sum(g.spent.filter(function(e){return e.tax}))+sum(g.misc.filter(function(e){return e.tax}))+taxOnlyTotal;
+  var madeToday=sum(g.made.filter(function(e){return e.date===t}));
+  var need=g.target+spentTotal+miscTotal;
+  var daysLeft=Math.max(1,daysBetween(t,g.end)+1);
+  var totalDays=Math.max(1,daysBetween(g.start,g.end)+1);
+  var perDay=Math.max(0,(need-madeTotal)/daysLeft);
+  var dayLeft=Math.max(0,Math.max(0,(need-(madeTotal-madeToday))/daysLeft)-madeToday);
+  return {dayLeft:dayLeft,taxOnlyTotal:taxOnlyTotal,taxTotal:taxTotal,madeTotal:madeTotal,spentTotal:spentTotal,miscTotal:miscTotal,madeToday:madeToday,need:need,remaining:need-madeTotal,
+    daysLeft:daysLeft,totalDays:totalDays,dailyNeed:need/totalDays,perDay:perDay,leftToday:perDay,
+    pct:need>0?Math.min(100,Math.max(0,madeTotal/need*100)):0,over:daysBetween(t,g.end)<0};
+}
+
+function render(){
+  var app=document.getElementById('app');
+  app.innerHTML=view.page==='goal'?goalHtml():view.page==='stub'?stubHtml():view.page==='form'?formHtml():listHtml();
+  window.scrollTo(0,0);
+}
+
+function listHtml(){
+  var h='<div class="brand"><i></i><b>Account-a-Bill</b></div><h1>Goals <button class="sm" data-a="new">+ New goal</button></h1>';
+  var lt=view.ltab||'goals';
+  h+='<div class="tabs"><button class="sm'+(lt==='goals'?'':' ghost')+'" data-a="ltab" data-t="goals">Goals</button><button class="sm'+(lt==='combined'?'':' ghost')+'" data-a="ltab" data-t="combined">Combined</button><button class="sm'+(lt==='monthly'?'':' ghost')+'" data-a="ltab" data-t="monthly">Monthly</button></div>';
+  if(lt==='monthly'){
+    return h+monthlyHtml();
+  }
+  if(lt==='combined'){
+    if(!state.goals.length)return h+'<div class="card mute">No goals yet. Add a goal to see combined totals.</div>';
+    return h+combinedHtml();
+  }
+  if(!state.goals.length)h+='<div class="card mute">No goals yet. Tap “+ New goal”, enter how much you want to make and by when. Then log what you make and what you spend each day.</div>';
+  state.goals.forEach(function(g){
+    var c=calc(g);
+    h+='<div class="card tap" data-a="open" data-id="'+esc(g.id)+'"><div class="row"><h2>'+esc(g.name)+(isOut(g)?'<span class="tag" style="color:#ffb347;border-color:#ffb347">Outgoing</span>':'')+'</h2><span class="mute">'+dueShort(g)+'</span></div>'+
+      '<div class="row"><span class="mute">'+(isOut(g)?'Left to pay per day':'Left to make per day')+'</span><b class="'+(c.leftToday>0?'':'pos')+'">'+money(c.leftToday)+'</b></div>'+
+      '<div class="bar"><i style="width:'+c.pct+'%"></i></div>'+
+      '<div class="mute">'+money(c.madeTotal)+(isOut(g)?' paid of ':' made of ')+money(c.need)+'</div><div class="mute">Due '+fmtLong(g.end)+' · set for '+c.totalDays+' day'+(c.totalDays>1?'s':'')+'</div></div>';
+  });
+  if(view.recover){
+    h+='<div class="card"><h2>Saved copy found</h2><div class="mute">A backup copy of your goals was found on this device ('+view.recover.goals.length+' goal'+(view.recover.goals.length>1?'s':'')+'). Restore it?</div><div class="btns"><button class="sm" data-a="recover">Restore my goals</button></div></div>';
+  }
+  if(state.goals.length){
+    var lb=state.lastBackup,ago=lb?Math.floor((Date.now()-lb)/864e5):null;
+    if(ago===null||ago>=7)h+='<div class="card"><h2>Back up your data</h2><div class="mute">'+(ago===null?'You have not saved a backup file yet.':'Last backup was '+ago+' days ago.')+' A file backup protects your goals if Safari clears this site’s data.</div><div class="btns"><button class="sm" data-a="dlBackup">Download backup file</button></div></div>';
+  }
+  h+='<div class="btns"><button class="ghost sm" data-a="backup">Backup / restore</button></div>';
+  if(view.backup){
+    var json=JSON.stringify(state);
+    h+='<div class="card"><h2>Backup / restore</h2><div class="mute">Copy this text and keep it somewhere safe. To restore, paste a backup here and tap Restore.</div>'+
+      '<textarea id="bk" spellcheck="false">'+esc(json)+'</textarea><div class="btns"><button class="sm" data-a="dlBackup">Download file</button><button class="sm" data-a="copyBk">Copy</button>'+
+      '<button class="ghost sm" data-a="restore">Restore from text</button></div><label>Or load a backup file<input id="bkFile" type="file" accept=".json,application/json"></label></div>';
+  }
+  h+='<p class="mute">Your data stays in this browser on this device. Clearing Safari website data erases it, so keep a backup.</p>';
+  return h;
+}var MILE=0.725;
+/* GPS trip tracking for auto-mileage. Keep tab open; browser may throttle in background. */
+var trip=null; // {gid, watchId, positions:[], miles:0, start:Date, lastPos:null}
+function haversine(lat1,lon1,lat2,lon2){
+  var R=3958.8, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function startGpsTrip(gid){
+  if(!navigator.geolocation){toast('GPS not available on this device.');return}
+  if(trip){toast('A trip is already in progress. End it first.');return}
+  trip={gid:gid,watchId:null,positions:[],miles:0,start:new Date(),lastPos:null};
+  trip.watchId=navigator.geolocation.watchPosition(function(pos){
+    if(!trip)return;
+    var c=pos.coords;
+    if(c.accuracy>80)return; // skip poor accuracy
+    var p={lat:c.latitude,lon:c.longitude,acc:c.accuracy,t:Date.now()};
+    if(trip.lastPos){
+      var d=haversine(trip.lastPos.lat,trip.lastPos.lon,p.lat,p.lon);
+      if(d>0.01 && d<5){ // ignore tiny/jitter and jumps >5mi (bad fix)
+        trip.miles+=d;
+        trip.positions.push(p);
+      }
+    }else trip.positions.push(p);
+    trip.lastPos=p;
+    // live update UI if on the right page
+    var el=document.getElementById('gpsMiles');
+    if(el)el.textContent=trip.miles.toFixed(2)+' mi';
+    var el2=document.getElementById('gpsStatus');
+    if(el2)el2.textContent='Tracking… '+trip.positions.length+' pts · ±'+Math.round(c.accuracy)+'m';
+  },function(err){
+    toast('GPS error: '+(err.message||err.code));
+    if(trip&&trip.watchId!=null)navigator.geolocation.clearWatch(trip.watchId);
+    trip=null;
+    if(view.page==='goal')render();
+  },{enableHighAccuracy:true,maximumAge:5000,timeout:15000});
+  toast('GPS trip started. Keep this tab open.');
+  if(view.page==='goal')render();
+}
+function stopGpsTrip(){
+  if(!trip){toast('No active trip.');return}
+  if(trip.watchId!=null)navigator.geolocation.clearWatch(trip.watchId);
+  var miles=Math.round(trip.miles*100)/100, gid=trip.gid, pts=trip.positions.length;
+  trip=null;
+  if(miles<0.1){toast('Trip too short ('+miles+' mi). Not logged.');if(view.page==='goal')render();return}
+  var g=find(gid);
+  if(!g){toast('Goal not found.');return}
+  var note='GPS trip · '+pts+' points';
+  g.taxonly.push({id:uid(),date:today(),amount:Math.round(miles*MILE*100)/100,note:note,tax:true,miles:miles});
+  save();
+  toast('Logged '+miles.toFixed(2)+' mi GPS trip ($'+(miles*MILE).toFixed(2)+')');
+  if(view.page==='goal')render();
+}
+/* Time tracker for estimated pay-per-hour. */
+var timer=null; // {gid, start:Date, pausedMs:0, pausedAt:null}
+var timerTick=null;
+function timerElapsed(){
+  if(!timer)return 0;
+  var ms=Date.now()-timer.start-timer.pausedMs;
+  if(timer.pausedAt)ms-=(Date.now()-timer.pausedAt);
+  return Math.max(0,ms);
+}
+function formatDuration(ms){
+  var s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
+  return (h?h+':':'')+String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');
+}
+function startTimer(gid){
+  if(timer){toast('A timer is already running. Stop it first.');return}
+  timer={gid:gid,start:Date.now(),pausedMs:0,pausedAt:null};
+  if(timerTick)clearInterval(timerTick);
+  timerTick=setInterval(function(){
+    var el=document.getElementById('timerDisplay');
+    if(el)el.textContent=formatDuration(timerElapsed());
+  },1000);
+  toast('Timer started');
+  if(view.page==='goal')render();
+}
+function pauseTimer(){
+  if(!timer||timer.pausedAt)return;
+  timer.pausedAt=Date.now();
+  if(view.page==='goal')render();
+}
+function resumeTimer(){
+  if(!timer||!timer.pausedAt)return;
+  timer.pausedMs+=(Date.now()-timer.pausedAt);
+  timer.pausedAt=null;
+  if(view.page==='goal')render();
+}
+function stopTimer(){
+  if(!timer){toast('No active timer.');return}
+  var ms=timerElapsed(), hours=Math.round((ms/3600000)*100)/100, gid=timer.gid;
+  if(timerTick){clearInterval(timerTick);timerTick=null}
+  timer=null;
+  if(hours<0.01){toast('Session too short. Not logged.');if(view.page==='goal')render();return}
+  var g=find(gid);
+  if(!g){toast('Goal not found.');return}
+  g.time.push({id:uid(),date:today(),hours:hours,note:'Timed session',start:null,end:null});
+  save();
+  toast('Logged '+hours.toFixed(2)+' hours');
+  if(view.page==='goal')render();
+}
+function sumHours(arr){return (arr||[]).reduce(function(t,x){return t+(x.hours||0)},0)}var EITC=[{ri:.0765,max:664,ps:10860,pm:18140,ro:.0765},{ri:.34,max:4427,ps:23890,pm:31160,ro:.1598},{ri:.40,max:7316,ps:23890,pm:31160,ro:.2106},{ri:.45,max:8231,ps:23890,pm:31160,ro:.2106}];
+function addDays(sd,n){var d=parse(sd);d.setDate(d.getDate()+n);return fmtDate(d)}
+function dueInfo(bal){
+  if(bal<=0)return '';
+  var t=today(),Y=+t.slice(0,4),ds=[[Y+'-04-15','Apr 15, '+Y],[Y+'-06-15','Jun 15, '+Y],[Y+'-09-15','Sep 15, '+Y],[(Y+1)+'-01-15','Jan 15, '+(Y+1)]];
+  var up=ds.filter(function(d){return d[0]>=t});
+  return '<div class="sum"><span>Next estimated payment due '+up[0][1]+(up.length>1?' ('+up.length+' left this year)':'')+'</span><b>'+money(bal/up.length)+'</b></div>';
+}
+function fmtLong(d){var x=parse(d);return isNaN(x)?d:x.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}
+function dueShort(g){
+  var t=today(),d=daysBetween(t,g.end),st=daysBetween(t,g.start);
+  if(st>0)return 'starts in '+st+' day'+(st>1?'s':'');
+  if(d<0)return 'ended '+(-d)+' day'+(d<-1?'s':'')+' ago';
+  if(d===0)return 'due today';
+  return d+' day'+(d>1?'s':'')+' left';
+}
+function dayMade(g,d){var t=0;g.made.forEach(function(e){if(e.date===d)t+=e.amount});return t}
+function todayExtraHtml(g,c){
+  var t=today();if(c.over||t<g.start)return '';
+  var ex=c.madeToday-c.dailyNeed;
+  return '<div class="mute">Today vs daily goal of '+money(c.dailyNeed)+': '+(ex>=0?'<b class="pos">+'+money(ex)+' extra</b>':'<b class="neg">'+money(-ex)+' short</b>')+'</div>';
+}function allocNote(g){
+  if(g.subMode!=='manual'||!g.subs||!g.subs.length)return '';
+  var st=subStats(g,calc(g));return st&&st.unalloc>0.005?' · '+money(st.unalloc)+' to allocate to sections':'';
+}
+function sectionsHtml(g,c){
+  var st=subStats(g,c),h='<div class="card"><h2>Sections</h2><div class="mute">Split this goal into parts, each with its own dollar amount. '+(isOut(g)?'Payments fill each section in order.':'Money you make covers expenses first, then fills each section in order.')+' The goal amount is the total of all sections'+(st?': <b>'+money(sum(g.subs))+'</b>.':'.')+'</div>';
+  if(st){
+    h+='<div class="btns"><button class="sm'+(st.manual?' ghost':'')+'" data-a="subMode" data-m="auto">Automatic</button><button class="sm'+(st.manual?'':' ghost')+'" data-a="subMode" data-m="manual">Manual</button></div>'+
+      '<div class="mute">'+(st.manual?'Manual: you decide how much of the money you make goes to each section.':'Automatic: money fills expenses first, then each section in order.')+'</div>';
+    if(st.manual)h+='<div class="sum"><span>Money to allocate (after expenses)</span><b>'+money(st.avail)+'</b></div>'+
+      '<div class="sum"><b>'+(st.unalloc<-0.005?'Over-allocated by':'Unallocated')+'</b><b class="'+(st.unalloc<-0.005?'neg':st.unalloc>0.005?'misc':'pos')+'">'+money(Math.abs(st.unalloc))+'</b></div>'+
+      '<div class="btns"><button class="ghost sm" data-a="subDist">Distribute in order</button><button class="ghost sm" data-a="subClear">Clear allocations</button></div>';
+    if(st.exp.amount>0)h+='<div class="item k-s"><div><b>Expenses to cover</b><div class="mute">'+money(st.exp.funded)+' of '+money(st.exp.amount)+'</div></div></div>';/* Cash flow / relief-flow estimator: projects remaining need, pace scenarios, and simple what-if. */
+function cashFlowHtml(g,c){
+  if(isOut(g)||c.over)return '';
+  var rem=Math.max(0,c.remaining), days=c.daysLeft, per=c.perDay;
+  var avgSoFar=0, el=Math.min(c.totalDays,Math.max(0,daysBetween(g.start,today())+1));
+  if(el>0)avgSoFar=c.madeTotal/el;
+  var atPace=avgSoFar*days, shortfall=rem-atPace;
+  var h='<div class="card"><h2>Cash flow estimator</h2><div class="mute">Projects what you still need and how different daily rates affect finishing on time. Rough planning tool, not a forecast.</div>'+
+    '<div class="grid">'+
+    '<div><div class="mute">Still to make</div><b>'+money(rem)+'</b></div>'+
+    '<div><div class="mute">Days left (incl. today)</div><b>'+days+'</b></div>'+
+    '<div><div class="mute">Required per day</div><b class="'+(per>0?'':'pos')+'">'+money(per)+'</b></div>'+
+    '<div><div class="mute">Your avg so far / day</div><b class="'+(avgSoFar>=c.dailyNeed?'pos':'neg')+'">'+money(avgSoFar)+'</b></div></div>';
+  h+='<div class="sum"><span>If you keep your current average</span><b class="'+(shortfall>0?'neg':'pos')+'">'+(shortfall>0?'short '+money(shortfall):'surplus '+money(-shortfall))+'</b></div>';
+  if(avgSoFar>0.01){
+    var daysAtAvg=Math.ceil(rem/avgSoFar);
+    h+='<div class="mute">At current average you would need about <b>'+daysAtAvg+'</b> day'+(daysAtAvg!==1?'s':'')+' to finish the remaining amount.</div>';
+  }
+  h+='<h2 style="margin-top:10px">What-if daily rate</h2><div class="mute">Enter a daily make amount to see projected finish.</div>'+
+    '<div class="grid"><label>Assumed $/day<input id="cfRate" type="number" inputmode="decimal" step="any" placeholder="'+Math.round(per||c.dailyNeed)+'" value="'+(view.cfRate||'')+'"></label>'+
+    '<div style="display:flex;align-items:flex-end"><button class="sm" data-a="cfCalc">Estimate</button></div></div>';
+  if(view.cfResult){
+    var r=view.cfResult;
+    h+='<div class="sum"><span>Days to finish remaining at '+money(r.rate)+'/day</span><b>'+r.days+'</b></div>'+
+      '<div class="mute">'+(r.days<=days?'Finishes on or before the due date.':'Finishes after due date by about '+(r.days-days)+' day'+(r.days-days!==1?'s':'')+'.')+'</div>';
+  }
+  h+='</div>';
+  return h;
+}
+function pctNum(v){return typeof v==='number'&&isFinite(v)?v:0}var FILING={
+  single:{n:'Single',std:16100,t:[12400,50400,105700,201775,256225,640600]},
+  mfj:{n:'Married filing jointly',std:32200,t:[24800,100800,211400,403550,512450,768700]},
+  mfs:{n:'Married filing separately',std:16100,t:[12400,50400,105700,201775,256225,384350]},
+  hoh:{n:'Head of household',std:24150,t:[17700,67450,105700,201750,256200,640600]}
+};
+function bracketTax(ti,F){
+  var tax=0,prev=0,marg=RATES[0];
+  for(var i=0;i<RATES.length;i++){
+    var top=i<F.t.length?F.t[i]:Infinity;
+    if(ti>prev){tax+=(Math.min(ti,top)-prev)*RATES[i];marg=RATES[i]}
+    prev=top;if(ti<=top)break;
+  }
+  return {tax:tax,marg:marg};
+}
+/* One pass over a list of goals: one standard deduction and one set of brackets. */
+function taxEstimate(list,opts){
+  var P=state.profile||{},F=FILING[P.filing]||FILING.single,credits=Math.max(0,pctNum(P.credits));
+  var items=[],skipped=[];
+  list.forEach(function(g){
+    if(isOut(g))return;
+    var ti=taxInfo(g),T=TYPES[ti.type];
+    if(!T||!ti.state||!STATES[ti.state]){skipped.push(g.name);return}
+    var c=calc(g),w2=!!T.fica,gr=c.madeTotal,dd=(w2||(opts&&opts.noDed))?0:c.taxTotal,nt=Math.max(0,gr-dd),pct=pctNum(ti.se);
+    var base=w2?gr:nt*0.9235;
+    items.push({w2:w2,qbi:!!T.qbi,gross:gr,ded:dd,net:nt,base:base,ss:base*pct*(12.4/15.3)/100,med:base*pct*(2.9/15.3)/100,code:ti.state,man:!!ti.stManual&&ti.st!=='',stp:pctNum(ti.st),paid:pctNum(ti.paid)+sum(g.taxpay||[])});
+  });
+  var baseTot=0;items.forEach(function(i){baseTot+=i.base});
+  var f=baseTot>SS_BASE?SS_BASE/baseTot:1;
+  var groups={};
+  var r={profit:0,stdFull:F.std,gross:0,ded:0,se:0,wages:0,net:0,half:0,qbiSrc:0,state:0,paid:0,items:items.length,skipped:skipped};
+  items.forEach(function(i){
+    var se=i.ss*f+i.med;
+    r.gross+=i.gross;r.ded+=i.ded;r.profit+=i.gross-i.ded;r.se+=se;r.paid+=i.paid;
+    if(i.man)r.state+=i.net*i.stp/100;else groups[i.code]=(groups[i.code]||0)+(i.w2?i.gross:i.net-se/2);
+    if(i.w2)r.wages+=i.gross;else{r.net+=i.net;r.half+=se/2;if(i.qbi)r.qbiSrc+=Math.max(0,i.net-se/2)}
+  });
+  var P2=state.profile||{},kidsN=Math.max(0,Math.floor(pctNum(P2.kids))),othN=Math.max(0,Math.floor(pctNum(P2.otherDeps)));
+  Object.keys(groups).sort(function(a,b){return groups[b]-groups[a]}).forEach(function(k,ix){r.state+=stateTaxCalc(k,Math.max(0,groups[k]),P.filing,ix===0?kidsN+othN:0)});
+  r.se+=Math.max(0,baseTot-(P.filing==='mfj'?250000:P.filing==='mfs'?125000:200000))*0.009;
+  r.agi=Math.max(0,r.wages+r.net-r.half-Math.max(0,pctNum(P.adj)));  r.std=Math.min(F.std,r.agi);
+  r.preQbi=Math.max(0,r.agi-F.std);
+  r.qbi=Math.min(0.2*r.qbiSrc,0.2*r.preQbi);
+  r.taxable=Math.max(0,r.preQbi-r.qbi);
+  var bt=bracketTax(r.taxable,F);
+  r.fedGross=bt.tax;r.marg=bt.marg;
+  var earned=Math.max(0,r.wages+r.net-r.half),mfjF=P.filing==='mfj';
+  var cut=Math.ceil(Math.max(0,r.agi-(mfjF?400000:200000))/1000)*50;
+  r.ctc=Math.max(0,2200*kidsN+500*othN-cut);
+  var careN=Math.max(0,Math.floor(pctNum(P.careKids))),careExp=Math.min(Math.max(0,pctNum(P.careExp)),careN>=2?6000:careN===1?3000:0,earned);
+  var rate=r.agi<=15000?50:Math.max(35,50-Math.ceil((r.agi-15000)/2000));
+  if(r.agi>(mfjF?150000:75000))rate=Math.max(20,35-Math.ceil((r.agi-(mfjF?150000:75000))/(mfjF?4000:2000)));
+  r.care=P.filing==='mfs'?0:careExp*rate/100;
+  var nr=credits+r.care,usedNr=Math.min(nr,bt.tax),ctcUsed=Math.min(r.ctc,bt.tax-usedNr);
+  r.credits=usedNr+ctcUsed;
+  r.fed=bt.tax-r.credits;
+  r.refund=Math.max(0,Math.min(r.ctc-ctcUsed,1700*kidsN,0.15*Math.max(0,earned-2500)));
+  var E=EITC[Math.min(3,kidsN)],eInc=Math.max(r.agi,earned);
+  r.eitc=P.filing==='mfs'||earned<=0?0:Math.max(0,Math.min(earned*E.ri,E.max)-Math.max(0,eInc-(mfjF?E.pm:E.ps))*E.ro);
+  r.total=r.se+r.fed+r.state-r.refund-r.eitc;
+  r.bal=r.total-r.paid;
+  r.filing=F.n;
+  return r;
+}function taxResHtml(list){
+  var r=taxEstimate(list),r0=taxEstimate(list,{noDed:true}),saved=r0.total-r.total;
+  if(!r.items)return '<div class="mute">Choose a worker type and a state on the Tax tab of a goal to see estimated taxes.</div>';
+  var h='<div class="sum"><span>Money made</span><b class="pos">'+money(r.gross)+'</b></div>'+
+    '<div class="sum"><span>Tax deductions (spent, misc, tax-only)</span><b>-'+money(r.ded)+'</b></div>'+
+    '<div class="sum"><span>Net profit after deductions</span><b class="'+(r.profit<0?'neg':'pos')+'">'+(r.profit<0?'-':'')+money(Math.abs(r.profit))+'</b></div>'+
+    (r.profit<0?'<div class="mute">Your deductions are larger than your income, so taxable earnings are $0 and there is a loss of '+money(-r.profit)+'.</div>':'')+
+    '<div class="sum"><span>Self-employment / Social Security + Medicare</span><b>'+money(r.se)+'</b></div>'+
+    '<div class="sum"><span>Standard deduction ('+esc(r.filing)+', '+money(r.stdFull)+' available)</span><b>-'+money(r.std)+'</b></div>'+
+    (r.qbi>0?'<div class="sum"><span>Qualified business income deduction (20%)</span><b>-'+money(r.qbi)+'</b></div>':'')+
+    '<div class="sum"><span>Federal taxable income</span><b>'+money(r.taxable)+'</b></div>'+
+    '<div class="sum"><span>Federal income tax (brackets, top rate '+Math.round(r.marg*100)+'%)</span><b>'+money(r.fedGross)+'</b></div>'+
+    (r.credits>0?'<div class="sum"><span>Credits'+(r.ctc>0||r.care>0?' (incl. dependent &amp; care credits)':'')+'</span><b>-'+money(r.credits)+'</b></div>':'')+
+    (r.refund>0?'<div class="sum"><span>Refundable child tax credit</span><b>-'+money(r.refund)+'</b></div>':'')+
+    (r.eitc>0?'<div class="sum"><span>Earned income credit</span><b>-'+money(r.eitc)+'</b></div>':'')+
+    '<div class="sum"><span>State income tax</span><b>'+money(r.state)+'</b></div>'+
+    '<div class="sum"><b>Total estimated tax</b><b>'+money(r.total)+'</b></div>'+
+    (saved>0.005?'<div class="sum"><span>Estimated tax saved by your deductions</span><b class="pos">'+money(saved)+'</b></div>':'')+
+    '<div class="sum"><span>Already paid / withheld</span><b>-'+money(r.paid)+'</b></div>'+
+    '<div class="sum"><b>'+(r.bal>0?'Still owed':'Due back')+'</b><b class="'+(r.bal>0?'neg':'pos')+'">'+money(Math.abs(r.bal))+'</b></div>'+
+    dueInfo(r.bal)+(r.gross>0&&r.total>0?'<div class="mute">Set aside about '+(r.total/r.gross*100).toFixed(1)+'% of what you make for taxes.</div>':'');
+  if(r.skipped.length)h+='<div class="mute">Not included, no worker type or state yet: '+r.skipped.map(esc).join(', ')+'.</div>';
+  return h;
+}function personFields(){
+  var P=state.profile||{};
+  return '<div class="grid"><label>Filing status<select data-tp="filing">'+Object.keys(FILING).map(function(k){return '<option value="'+k+'"'+(P.filing===k?' selected':'')+'>'+FILING[k].n+'</option>'}).join('')+'</select></label>'+
+    '<label>Tax credits ($)<input data-tp="credits" type="number" inputmode="decimal" step="any" value="'+esc(P.credits||'')+'" placeholder="0"></label></div>'+
+    '<div class="grid"><label>Dependents under 17<input data-tp="kids" type="number" inputmode="numeric" min="0" step="1" value="'+esc(P.kids||'')+'" placeholder="0"></label>'+
+    '<label>Other dependents<input data-tp="otherDeps" type="number" inputmode="numeric" min="0" step="1" value="'+esc(P.otherDeps||'')+'" placeholder="0"></label></div>'+
+    '<div class="grid"><label>Child &amp; dependent care paid ($)<input data-tp="careExp" type="number" inputmode="decimal" step="any" value="'+esc(P.careExp||'')+'" placeholder="0"></label>'+
+    '<label>Care dependents (under 13)<input data-tp="careKids" type="number" inputmode="numeric" min="0" step="1" value="'+esc(P.careKids||'')+'" placeholder="0"></label></div>'+
+    '<label>Other adjustments ($)<input data-tp="adj" type="number" inputmode="decimal" step="any" value="'+esc(P.adj||'')+'" placeholder="0"></label>'+
+    '<div class="mute">Earned income credit is figured automatically from your earnings and dependents under 17 (assumes you qualify). Care credit uses the 2026 rate (20% to 50%, verify on Form 2441). Adjustments such as self-employed health insurance or retirement contributions lower federal income. Filing status, credits and dependents apply to all your goals. Each dependent under 17 adds a $2,200 child tax credit (partly refundable) and each other dependent a $500 credit. Dependents also lower state tax in states that allow it.</div>';
+}function timeCardHtml(g,c){
+  var hours=sumHours(g.time), rate=hours>0?c.madeTotal/hours:0;
+  var todayH=0;g.time.forEach(function(e){if(e.date===today())todayH+=e.hours||0});
+  var running=timer&&timer.gid===g.id;
+  var h='<div class="card"><h2>Time tracker</h2><div class="mute">Log hours worked to estimate effective pay per hour. Rate uses money made so far divided by total hours logged for this goal.</div>';
+  if(running){
+    var paused=!!timer.pausedAt;
+    h+='<div class="big" id="timerDisplay">'+formatDuration(timerElapsed())+'</div>'+
+      '<div class="mute">'+(paused?'Paused':'Running')+'</div>'+
+      '<div class="btns">'+
+      (paused?'<button data-a="resumeTimer">Resume</button>':'<button class="ghost" data-a="pauseTimer">Pause</button>')+
+      '<button class="danger" data-a="stopTimer">Stop &amp; log</button></div>';
+  }else{
+    h+='<div class="btns"><button data-a="startTimer">Start timer</button></div>'+
+      (timer?'<div class="mute">A timer is active on another goal.</div>':'');
+  }
+  h+='<div class="grid" style="margin-top:10px">'+
+    '<div><div class="mute">Total hours</div><b>'+hours.toFixed(2)+'</b></div>'+
+    '<div><div class="mute">Today</div><b>'+todayH.toFixed(2)+' h</b></div>'+
+    '<div><div class="mute">Effective $/hr</div><b class="'+(rate>0?'pos':'')+'">'+(hours>0?money(rate):'—')+'</b></div>'+
+    '<div><div class="mute">Made so far</div><b class="pos">'+money(c.madeTotal)+'</b></div></div>';
+  h+='<h2 style="margin-top:10px">Log hours manually</h2>'+
+    '<div class="grid"><label>Hours<input id="tmHours" type="number" inputmode="decimal" step="any" placeholder="0"></label><label>Date<input id="tmDate" type="date" value="'+today()+'"></label></div>'+
+    '<label>Note (optional)<input id="tmNote" placeholder="e.g. client work, drive time"></label>'+
+    '<div><button class="ghost" data-a="addTime">Add hours</button></div>';
+  var list=(g.time||[]).slice().sort(function(a,b){return a.date<b.date?1:-1});
+  if(list.length){
+    h+='<div class="mute" style="margin-top:8px">Recent entries</div>';
+    list.slice(0,12).forEach(function(e){
+      h+='<div class="item"><div><b>'+e.hours.toFixed(2)+' h</b><div class="mute">'+esc(fmtLong(e.date))+(e.note?' · '+esc(e.note):'')+'</div></div>'+
+        '<button class="danger sm" data-a="delTime" data-id="'+esc(e.id)+'">'+(view.armed==='tm'+e.id?'Tap to confirm':'Delete')+'</button></div>';
+    });
+    if(list.length>12)h+='<div class="mute">Showing latest 12.</div>';
+  }
+  h+='</div>';
+  return h;
+}function mileCardHtml(g){
+  var mi=0;g.taxonly.forEach(function(e){if(e.miles)mi+=e.miles});
+  var tracking=trip&&trip.gid===g.id;
+  var gpsH='<div class="card"><h2>GPS auto-mileage</h2><div class="mute">Start a trip to track business miles automatically (uses device GPS). Keep this tab open while driving. Accuracy filter discards poor fixes. Ends as a tax-only deduction at 72.5¢/mi.</div>';
+  if(tracking){
+    gpsH+='<div class="big" id="gpsMiles">'+trip.miles.toFixed(2)+' mi</div>'+
+      '<div class="mute" id="gpsStatus">Tracking… '+trip.positions.length+' pts</div>'+
+      '<div class="btns"><button class="danger" data-a="stopGps">End trip &amp; log</button></div>';
+  }else{
+    gpsH+='<div class="btns"><button data-a="startGps">Start GPS trip</button></div>'+
+      (trip?'<div class="mute">A trip is active on another goal. End it there first.</div>':'');
+  }
+  gpsH+='</div>';
+  return gpsH+'<div class="card"><h2>Mileage</h2><div class="mute">Business miles at the 2026 IRS rate of 72.5¢ per mile. Each trip becomes a tax-only deduction. Use GPS above or enter manually.</div>'+
+    '<div class="grid"><label>Miles<input id="miMiles" type="number" inputmode="decimal" step="any" placeholder="0"></label><label>Date<input id="miDate" type="date" value="'+today()+'"></label></div>'+
+    '<label>Note (optional)<input id="miNote" placeholder="e.g. client visit"></label><div><button class="ghost" data-a="addMiles">Add mileage deduction</button></div>'+
+    '<div class="mute">Logged so far: <b>'+mi.toLocaleString(undefined,{maximumFractionDigits:1})+' mi</b> = <b class="blue">'+money(Math.round(mi*MILE*100)/100)+'</b></div></div>';
+}  else if(a==='startGps'){
+    if(!g){toast('Open a goal first.');return}
+    startGpsTrip(g.id);
+  }
+  else if(a==='stopGps'){
+    stopGpsTrip();
+  }
+  else if(a==='cfCalc'){
+    var rate=num('cfRate');
+    if(rate==null||rate<=0){toast('Enter a daily amount above zero.');return}
+    var rem=Math.max(0,calc(g).remaining);
+    var daysNeeded=Math.ceil(rem/rate);
+    view.cfRate=rate;
+    view.cfResult={rate:rate,days:daysNeeded};
+    var ycf=window.scrollY;render();window.scrollTo(0,ycf);
+  }
+  else if(a==='startTimer'){
+    if(!g){toast('Open a goal first.');return}
+    startTimer(g.id);
+  }
+  else if(a==='pauseTimer'){pauseTimer()}
+  else if(a==='resumeTimer'){resumeTimer()}
+  else if(a==='stopTimer'){stopTimer()}
+  else if(a==='addTime'){
+    var th=num('tmHours');if(th==null||th<=0){toast('Enter hours above zero.');return}
+    g.time.push({id:uid(),date:val('tmDate')||today(),hours:th,note:val('tmNote').trim()||'Manual'});
+    save();var yt=window.scrollY;render();window.scrollTo(0,yt);toast('Hours logged');
+  }
+  else if(a==='delTime'){
+    var tk='tm'+el.dataset.id;
+    if(view.armed!==tk){view.armed=tk;var yt2=window.scrollY;render();window.scrollTo(0,yt2);return}
+    g.time=g.time.filter(function(x){return x.id!==el.dataset.id});view.armed=null;save();var yt3=window.scrollY;render();window.scrollTo(0,yt3);
+  }    h+=cashFlowHtml(g,c);
+    if(!isOut(g))h+=timeCardHtml(g,c);
+    h+=sectionsHtml(g,c);
+    var gd=view.armed==='goal';
+    h+='<div class="btns"><button class="ghost sm" data-a="edit">Edit goal</button><button class="ghost sm" data-a="dupGoal">Duplicate for next period</button><button class="danger sm" data-a="delGoal">'+(gd?'Tap to confirm delete':'Delete goal')+'</button></div>';
+  }
+  else if(tab==='daily'){
+    h+=dailyHtml(g,c);
+  }
+  else if(tab==='made'){
+    h+=isOut(g)?entryForm('made','Payment','Log money you paid out toward this goal.','addMade','e.g. rent, card payment','Add payment',false,false):entryForm('made','Money made','','addMade','e.g. tips, client payment','Add money made',false,false);
+    h+='<div class="mute">'+(isOut(g)?'Total paid so far':'Total made so far')+': <b class="pos">'+money(c.madeTotal)+'</b> · today <b class="pos">'+money(c.madeToday)+'</b></div>';
+    if(g.subs&&g.subs.length&&g.subMode==='manual'){var stH=subStats(g,c);h+='<div class="mute">Unallocated to sections: <b class="misc">'+money(Math.max(0,stH.unalloc))+'</b> <button class="ghost sm" data-a="tab" data-t="overview">Allocate</button></div>'}
+    if(!isOut(g))h+=timeCardHtml(g,c);
+  }
+  else if(tab==='spent'){
+    h+=entryForm('spent','Money spent','Spending raises what you need to make. The per-day amount updates.','addSpent','e.g. gas, supplies','Add money spent',true,true);
+    h+='<div class="mute">Total spent so far: <b class="neg">'+money(c.spentTotal)+'</b></div>';
+  }
+  else if(tab==='misc'){
+    h+=entryForm('misc','Misc expenses','One-off costs that do not fit anywhere else. They add to the amount you need to make.','addMisc','e.g. parking, late fee','Add misc expense',true,true);
+    h+='<div class="mute">Total misc so far: <b class="misc">'+money(c.miscTotal)+'</b></div>';
+  }
+  else if(tab==='taxonly'){
+    h+=taxCardHtml(g)+payCardHtml(g)+mileCardHtml(g);
+    h+=entryForm('taxonly','Tax-only deduction','Work costs you paid for outside this goal’s pay. They count as tax deductions but do not change what you need to make or your per-day amount.','addTaxOnly','e.g. tools, mileage, phone bill','Add tax-only deduction',true,false);
+    h+='<div class="mute">Total tax-only deductions: <b class="blue">'+money(c.taxOnlyTotal)+'</b></div>';
+  }function stubData(g,st){
+  var inR=function(e){return e.date>=st.from&&e.date<=st.to};
+  var made=g.made.filter(inR).sort(byDate);
+  var exp=g.spent.map(function(e){return {date:e.date,amount:e.amount,note:e.note,tax:!!e.tax,kind:'Spent'}})
+    .concat(g.misc.map(function(e){return {date:e.date,amount:e.amount,note:e.note,tax:!!e.tax,kind:'Misc'}})).filter(inR).sort(byDate);
+  var tonly=g.taxonly.filter(inR).sort(byDate),tox=sum(tonly);
+  var gross=sum(made),ded=sum(exp.filter(function(e){return e.tax})),oth=sum(exp.filter(function(e){return !e.tax}));
+  return {made:made,exp:exp,tonly:tonly,tox:tox,gross:gross,ded:ded,oth:oth,net:gross-ded-oth,taxable:gross-ded-tox};
+}
+function stubCsv(g,st){
+  var d=stubData(g,st),p=state.profile||{},yr=st.to.slice(0,4),y=stubData(g,{from:yr+'-01-01',to:st.to}),wh=pctNum(st.withheld);
+  var te=taxEstimate([g]),rate=te.items?Math.max(0,te.se+te.fed+te.state)/Math.max(te.gross,1):0.1413;
+  var r=[['Independent contractor pay statement'],['Paid by',p.payer||''],['Payer address',p.payerAddr||''],['Pay to',p.name||''],['Payee address',p.addr||''],['Payee ID (last 4)',p.tin4||''],
+    ['Pay period',st.from+' to '+st.to],['Pay date',st.payDate||today()],['Payment method',p.method||''],['Goal / project',g.name],[],
+    ['Type','Date','Description','Amount','Tax deductible']];
+  d.made.forEach(function(e){r.push(['Earnings',e.date,e.note||'',e.amount.toFixed(2),''])});
+  d.exp.forEach(function(e){r.push([e.kind,e.date,e.note||'',(-e.amount).toFixed(2),e.tax?'Yes':'No'])});
+  d.tonly.forEach(function(e){r.push(['Tax only',e.date,e.note||'',e.amount.toFixed(2),'Yes'])});
+  r.push([],['Summary','','','This period','Year to date'],
+    ['Gross compensation','','',d.gross.toFixed(2),y.gross.toFixed(2)],
+    ['Withheld by payer','','',(-wh).toFixed(2),''],
+    ['Net payment received','','',(d.gross-wh).toFixed(2),''],
+    ['Tax-deductible expenses','','',(d.ded+d.tox).toFixed(2),(y.ded+y.tox).toFixed(2)],
+    ['Net profit','','',(d.gross-d.ded-d.tox).toFixed(2),(y.gross-y.ded-y.tox).toFixed(2)],
+    ['Suggested tax set-aside (estimate)','','',(d.gross*rate).toFixed(2),(y.gross*rate).toFixed(2)]);
+  return csvText(r);
+}function formHtml(){
+  var g=view.form.id?find(view.form.id):null;
+  var d=g||{name:'',target:'',start:today(),end:''};
+  return '<p style="margin:8px 0 0"><a class="back" href="#" data-a="cancel">‹ Cancel</a></p><h1>'+(g?'Edit goal':'New goal')+'</h1><div class="card">'+
+    '<label>Name<input id="fname" value="'+esc(d.name)+'" placeholder="e.g. November income or Rent"></label>'+
+    '<label>Goal type<select id="fkind"><option value="in"'+(d.kind==='out'?'':' selected')+'>Incoming: money to make</option><option value="out"'+(d.kind==='out'?' selected':'')+'>Outgoing: money to pay out</option></select></label>'+
+    '<label>Goal amount ($)<input id="ftarget" type="number" inputmode="decimal" step="any" value="'+esc(d.target)+'"'+(g&&g.subs&&g.subs.length?' readonly':'')+'></label>'+(g&&g.subs&&g.subs.length?'<div class="mute">This amount is the total of your sections. Change the sections on the Overview.</div>':'')+
+    '<div class="grid"><label>Start<input id="fstart" type="date" value="'+esc(d.start)+'"></label><label>End<input id="fend" type="date" value="'+esc(d.end)+'"></label></div>'+
+    '<div><button data-a="saveGoal">Save goal</button></div></div>';
+}function val(id){return document.getElementById(id).value}
+function num(id){var n=parseFloat(val(id));return isFinite(n)?n:null}
+
+document.addEventListener('click',function(ev){
+  var el=ev.target.closest('[data-a]');if(!el)return;
+  ev.preventDefault();
+  var a=el.dataset.a,g=view.id?find(view.id):null;
+  if(a!=='del'&&a!=='delGoal'&&a!=='delPay'&&a!=='delManual'&&a!=='delSub'&&a!=='delTime')view.armed=null;
+  if(a==='new'){view={page:'form',form:{id:null}};render()}
+  else if(a==='edit'){view={page:'form',id:view.id,form:{id:view.id}};render()}
+  else if(a==='cancel'){view.page=view.form&&view.form.id?'goal':'list';render()}
+  else if(a==='back'){view={page:'list'};render()}
+  else if(a==='open'){view={page:'goal',id:el.dataset.id};render()}
+  // ... many original handlers ...
+  else if(a==='startGps'){
+    if(!g){toast('Open a goal first.');return}
+    startGpsTrip(g.id);
+  }
+  else if(a==='stopGps'){
+    stopGpsTrip();
+  }
+  else if(a==='cfCalc'){
+    var rate=num('cfRate');
+    if(rate==null||rate<=0){toast('Enter a daily amount above zero.');return}
+    var rem=Math.max(0,calc(g).remaining);
+    var daysNeeded=Math.ceil(rem/rate);
+    view.cfRate=rate;
+    view.cfResult={rate:rate,days:daysNeeded};
+    var ycf=window.scrollY;render();window.scrollTo(0,ycf);
+  }
+  else if(a==='startTimer'){
+    if(!g){toast('Open a goal first.');return}
+    startTimer(g.id);
+  }
+  else if(a==='pauseTimer'){pauseTimer()}
+  else if(a==='resumeTimer'){resumeTimer()}
+  else if(a==='stopTimer'){stopTimer()}
+  else if(a==='addTime'){
+    var th=num('tmHours');if(th==null||th<=0){toast('Enter hours above zero.');return}
+    g.time.push({id:uid(),date:val('tmDate')||today(),hours:th,note:val('tmNote').trim()||'Manual'});
+    save();var yt=window.scrollY;render();window.scrollTo(0,yt);toast('Hours logged');
+  }
+  else if(a==='delTime'){
+    var tk='tm'+el.dataset.id;
+    if(view.armed!==tk){view.armed=tk;var yt2=window.scrollY;render();window.scrollTo(0,yt2);return}
+    g.time=g.time.filter(function(x){return x.id!==el.dataset.id});view.armed=null;save();var yt3=window.scrollY;render();window.scrollTo(0,yt3);
+  }
+  else if(a==='dupGoal'){
+    var ds=addDays(g.end,1),n2={id:uid(),name:g.name+' (next)',target:g.target,kind:g.kind||'in',start:ds,end:addDays(ds,daysBetween(g.start,g.end)),made:[],spent:[],misc:[],taxonly:[],taxpay:[],subs:[],time:[]};
+    if(g.subs&&g.subs.length)n2.subs=g.subs.map(function(x){return {id:uid(),name:x.name,amount:x.amount}});
+    if(g.taxinfo)n2.taxinfo=JSON.parse(JSON.stringify(g.taxinfo));
+    state.goals.push(n2);save();view={page:'goal',id:n2.id};render();toast('Next period goal created');
+  }    download('account-a-bill-all-'+today()+'.csv',csvText(rr));
+  }
+  else if(a==='monthCsv'){
+    var mr=[['Month','Income (incl. manual)','Manual income','Spent','Misc','Tax-only deductions','Net','Tax deductible','Tax paid','Est. tax set-aside','Take-home','Business miles']];
+    monthData().forEach(function(r){mr.push([r.key,r.made.toFixed(2),r.manual.toFixed(2),r.spent.toFixed(2),r.misc.toFixed(2),r.tonly.toFixed(2),r.net.toFixed(2),r.tax.toFixed(2),r.paid.toFixed(2),r.setAside.toFixed(2),r.takeHome.toFixed(2),r.miles||0])});
+    download('monthly-income-'+today()+'.csv',csvText(mr));
+  }
+  // ... remaining original handlers for manual income, filters, stubs, saveGoal, addMade, etc. ...
+});
+
+function refreshTax(){
+  var g=view.id?find(view.id):null,b1=document.getElementById('taxRes'),b2=document.getElementById('taxResAll');
+  if(b1&&g){var ti=taxInfo(g);b1.innerHTML=ti.type&&ti.state?taxResHtml([g]):'<div class="mute">Choose a worker type and a state to see your estimated taxes.</div>'}
+  if(b2)b2.innerHTML=taxResHtml(state.goals);
+}
+document.addEventListener('change',function(ev){
+  var el=ev.target;
+  if(el&&el.id==='bkFile'&&el.files&&el.files[0]){var fr=new FileReader();fr.onload=function(){var ta=document.getElementById('bk');if(ta){ta.value=fr.result;toast('File loaded. Tap Restore from text.')}};fr.readAsText(el.files[0]);return}
+  if(!el.dataset)return;
+  if(el.dataset.tp==='filing'){state.profile.filing=el.value;save();var y0=window.scrollY;render();window.scrollTo(0,y0);return}
+  if(el.dataset.tx!=='type'&&el.dataset.tx!=='state')return;
+  var g=find(view.id);if(!g)return;var ti=taxInfo(g);
+  if(el.dataset.tx==='type'){ti.type=el.value;if(TYPES[el.value])ti.se=TYPES[el.value].se}
+  else{ti.state=el.value;ti.st='';ti.stManual=false}
+  save();var y=window.scrollY;render();window.scrollTo(0,y);
+});
+document.addEventListener('input',function(ev){
+  var el=ev.target;if(!el.dataset)return;var n=parseFloat(el.value);
+  if(el.id==='mSearch'){view.mq=el.value;var mp=el.selectionStart,my2=window.scrollY;render();window.scrollTo(0,my2);var m2=document.getElementById('mSearch');if(m2){m2.focus();try{m2.setSelectionRange(mp,mp)}catch(x){}}return}
+  if(el.id==='hSearch'){view.q=el.value;var pos=el.selectionStart,y=window.scrollY;render();window.scrollTo(0,y);var e2=document.getElementById('hSearch');if(e2){e2.focus();try{e2.setSelectionRange(pos,pos)}catch(x){}}return}
+  if(el.dataset.tp==='credits'||el.dataset.tp==='careExp'||el.dataset.tp==='adj'){state.profile[el.dataset.tp]=isFinite(n)?Math.max(0,n):0;save();refreshTax();return}
+  if(el.dataset.tp==='kids'||el.dataset.tp==='otherDeps'||el.dataset.tp==='careKids'){state.profile[el.dataset.tp]=isFinite(n)?Math.max(0,Math.floor(n)):0;save();refreshTax();return}
+  if(!el.dataset.tx||el.dataset.tx==='type'||el.dataset.tx==='state')return;
+  var g=find(view.id);if(!g)return;var ti=taxInfo(g);
+  ti[el.dataset.tx]=isFinite(n)?n:'';if(el.dataset.tx==='st')ti.stManual=isFinite(n);save();refreshTax();
+});
+if(!state.goals.length){idbGet(function(j){try{var d=JSON.parse(j);if(d&&d.goals&&d.goals.length&&!state.goals.length){view.recover=d;if(view.page==='list')render()}}catch(e){}})}
+document.addEventListener('visibilitychange',function(){if(!document.hidden&&view.page==='list'&&!view.backup)render()});
+render();
+})();
+</script>
+
+
+</body></html>
