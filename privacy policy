@@ -1,0 +1,47 @@
+# Privacy Policy for Account-a-Bill
+
+**Last updated:** October 27, 2026
+
+Account-a-Bill (“the App”) is a personal finance tracking application that runs entirely on your device.
+
+## 1. Data Collection
+
+Account-a-Bill does **not** collect, transmit, or store any of your personal or financial data on external servers.
+
+All information you enter (goals, income, expenses, mileage, time logs, tax settings, etc.) is stored **only on your device** using the browser’s local storage and IndexedDB.
+
+## 2. Location Data
+
+The App may request access to your device’s location **only** when you choose to use the GPS auto-mileage feature.
+
+- Location data is used solely to calculate the distance of a business trip.
+- Location data is processed on your device in real time.
+- Location data is **never** uploaded, shared, or stored on any server.
+- You can deny location permission; the rest of the App continues to work normally.
+- You can stop a GPS trip at any time.
+
+## 3. Analytics & Tracking
+
+The App contains **no** third-party analytics, advertising SDKs, or tracking scripts.
+
+## 4. Backups
+
+Any backup files you create (JSON exports) are generated and saved entirely under your control. The App never uploads these files.
+
+## 5. Children’s Privacy
+
+The App is not directed at children under 13. We do not knowingly collect personal information from children.
+
+## 6. Changes to This Policy
+
+If this privacy policy changes, the updated version will be posted with a new “Last updated” date. Continued use of the App after changes constitutes acceptance of the revised policy.
+
+## 7. Contact
+
+For questions about this privacy policy, contact the developer through the GitHub repository:
+
+https://github.com/synchancybersecurity/account-a-bill
+
+---
+
+This policy applies to both the web version and any native wrappers (Android / iOS) of Account-a-Bill.
